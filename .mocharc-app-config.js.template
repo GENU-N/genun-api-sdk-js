@@ -1,0 +1,47 @@
+/**
+ * Description: This file contains test data for the test cases.
+ */
+
+const SDK = {
+    domain: '', // Required
+    apiKey: '', // Required
+    headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36', // Required
+    },
+    debug: false,
+}
+
+const EIP712 = {
+    domain: {
+        name: 'GENU.N Authentication',
+        version: '1.0',
+        verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
+    },
+    primaryType: 'Request',
+    types: {
+        Request: [
+            { name: 'id', type: 'string' },
+            { name: 'account', type: 'address' },
+            { name: 'timestamp', type: 'uint256' },
+        ],
+    },
+}
+
+const privateKey = '...' // Placeholder for an actual private key
+
+const media = {
+    existsId: '100000000000000001', // Required
+    nonExistsId: '999999999999999999' // Required
+}
+
+const claimableItem = {
+    qrcodeUrl: null, // The URL for the QR code, if applicable
+}
+
+module.exports = {
+    SDK,
+    EIP712,
+    privateKey,
+    media,
+    claimableItem,
+}
