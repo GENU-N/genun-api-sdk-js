@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GENU-N Client SDK for JavaScript Sample</title>
+
+    <!-- Libraries to Assist with SDK Sample Usage -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
+
+    <style>
+        html,
+        body {
+            background-color: #f7f7f7;
+            color: rgba(0, 0, 0, .7);
+        }
+        body {
+            padding-bottom: 60px;
+        }
+        .notyf__toast {
+            width: auto; /* Set the width to auto to fit the content length */
+            max-width: 80%; /* Or set a maximum width to prevent the notification from being too wide */
+            white-space: normal; /* Allow text to wrap */
+        }
+        .notyf__ripple {
+            height: 100vw;
+            width: 100vw;
+        }
+
+        h1 {
+            text-align: center;
+            color: rgba(0, 0, 0, .7);
+        }
+        .h2, h2 {
+            font-size: 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.02);
+            padding-bottom: 14px;
+            margin-bottom: 16px;
+            color: rgba(0, 0, 0, .7);
+        }
+        .form-group {
+            margin-bottom: 1rem;
+            margin-left: 16px;
+            margin-right: 16px;
+        }
+        section {
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            border-radius: 8px;
+            margin-top: 32px;
+            padding-top: 12px;
+        }
+        section > .btn-primary {
+            margin-left: 16px;
+        }
+        /* Set the width and background color for the scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px; /* Adjust the width as needed */
+            height: 8px; /* Adjust the height as needed */
+            background-color: #2A2A2A; /* Scrollbar background color */
+        }
+
+        /* Set the background color for the scrollbar track */
+        ::-webkit-scrollbar-track {
+            background-color: #2A2A2A; /* Track background color */
+        }
+
+        /* Set the style for the scrollbar thumb */
+        ::-webkit-scrollbar-thumb {
+            background-color: #6B6B6B; /* Thumb background color */
+            border-radius: 6px; /* Set rounded corners */
+        }
+
+        /* Set the style for the scrollbar thumb on hover */
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #959595;
+        }
+
+        /* If you want the scrollbar to be transparent, you can set the scrollbar and track background to transparent */
+        ::-webkit-scrollbar,
+        ::-webkit-scrollbar-track {
+            background-color: transparent; /* Transparent background */
+        }
+
+        /* If you want the thumb to be semi-transparent, you can set it like this */
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(107, 107, 107, 0.5); /* Semi-transparent thumb */
+        }
+
+        /* Modify the color of the scrollbar corners */
+        ::-webkit-scrollbar-corner {
+            background-color: #2A2A2A; /* Set to the same color as the scrollbar track */
+        }
+
+
+        .result {
+            background-color: #E8E8E8;
+            border: 1px solid #e1e1e1;
+            padding: 10px;
+            margin-top: 8px;
+            margin-bottom: 20px;
+            margin-left: 16px;
+            margin-right: 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        pre {
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+            padding: 5px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        .json-result {
+            background-color: #23241f;
+            color: #f8f8f2;
+            overflow: auto;
+            max-height: 600px;
+        }
+        .copy-btn {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>GENU-N Client SDK Features</h1>
+
+        <!-- Configuration Section -->
+        <section id="config-section">
+            <h2>Configuration SDK</h2>
+            <div class="form-group">
+                <label for="domain">Domain:</label>
+                <input type="text" class="form-control" id="domain" placeholder="Enter Domain">
+            </div>
+            <div class="form-group">
+                <label for="apiKey">API Key:</label>
+                <input type="text" class="form-control" id="apiKey" placeholder="Enter API Key">
+            </div>
+        </section>
+
+        <!-- Login Section -->
+        <section id="login-section">
+            <h2>Login via Wallet</h2>
+            <button class="btn btn-primary" onclick="handle('login', 'login-result')">Login</button>
+            <div class="result" id="login-result"></div>
+        </section>
+
+        <!-- List Products Section -->
+        <section id="list-products-section">
+            <h2>List Products</h2>
+            <button class="btn btn-primary" onclick="handle('listProducts', 'list-products-result')">List</button>
+            <div class="result" id="list-products-result"></div>
+        </section>
+
+        <!-- Get Product Details Section -->
+        <section id="product-details-section">
+            <h2>Get Product Details</h2>
+            <div class="form-group">
+                <label for="productIdForGetProductDetails">Product ID:</label>
+                <input type="text" class="form-control" id="productIdForGetProductDetails" placeholder="Enter Product ID">
+            </div>
+            <button class="btn btn-primary" onclick="handle('getProductDetails', 'product-details-result')">Get Details</button>
+            <div class="result" id="product-details-result"></div>
+        </section>
+
+        <!-- Authenticate Product Item Section -->
+        <section id="authenticate-product-item-section">
+            <h2>Authenticate Product Item</h2>
+            <div class="form-group">
+                <label for="authLink">
+                    Authentication Link:
+                    <small id="authLinkHelp" class="form-text text-muted" style="display: inline-block;">
+                        (Link structure: https://partner-domain.com/path/to/authentication?e={secureCode})
+                    </small>
+                </label>
+                <input type="text" class="form-control" id="authLink" placeholder="Enter Authentication Link">
+            </div>
+            <button class="btn btn-primary" onclick="handle('authenticateProductItem', 'authenticate-product-item-result')">Authenticate</button>
+            <div class="result" id="authenticate-product-item-result"></div>
+        </section>
+
+        <!-- Claim Product Item Section -->
+        <section id="claim-product-item-section">
+            <h2>Claim Product Item</h2>
+            <div class="form-group">
+                <label for="productItemIdToClaim">Product Item ID:</label>
+                <input type="text" class="form-control" id="productItemIdToClaim" placeholder="Enter Product Item ID" disabled>
+            </div>
+            <button class="btn btn-primary" onclick="handle('claimProductItem', 'claim-product-item-result')">Claim</button>
+            <div class="result" id="claim-product-item-result"></div>
+        </section>
+
+        <!-- List Claimed Product Items Section -->
+        <section id="list-claimed-products-section">
+            <h2>List Claimed Product Items</h2>
+            <button class="btn btn-primary" onclick="handle('listClaimedItems', 'list-claimed-products-result')">List</button>
+            <div class="result" id="list-claimed-products-result"></div>
+        </section>
+
+        <!-- Get Item Details Section -->
+        <section id="item-details-section">
+            <h2>Get Product Item Details</h2>
+            <div class="form-group">
+                <label for="productItemIdToGetItemDetails">Product Item ID:</label>
+                <input type="text" class="form-control" id="productItemIdToGetItemDetails" placeholder="Enter Product Item ID">
+            </div>
+            <button class="btn btn-primary" onclick="handle('getItemDetails', 'item-details-result')">Get Details</button>
+            <div class="result" id="item-details-result"></div>
+        </section>
+
+        <!-- List NFTs Section -->
+        <section id="list-nfts-section">
+            <h2>List NFTs</h2>
+            <button class="btn btn-primary" onclick="handle('listNFTs', 'list-nfts-result')">List</button>
+            <div class="result" id="list-nfts-result"></div>
+        </section>
+
+        <!-- Gating Verify Section -->
+        <section id="gating-verify-section">
+            <h2>Gating Verify</h2>
+            <button class="btn btn-primary" onclick="handle('gatingVerify', 'gating-verify-result')">Verify</button>
+            <div class="result" id="gating-verify-result"></div>
+        </section>
+    </div>
+
+
+    <!-- Libraries to Assist with SDK Sample Usage -->
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash/lodash.min.js"></script>
+
+    <script>
+        /**
+         * Helper methods for displaying the SDK features:
+         * display notification, escape HTML, display result, and copy to clipboard
+         */
+
+        const notify = new Notyf({
+            duration: 3000,
+            position: {
+                x: 'center',
+                y: 'top',
+            },
+        })
+
+        const escapeHtml = function (text) {
+            if (!text) {
+                return ''
+            }
+
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;")
+        }
+
+        const displayResult = function (elementId, result) {
+            result = JSON.stringify(result, null, 2)
+            result = escapeHtml(result)
+            const element = document.getElementById(elementId)
+            const html = `
+            <pre class="json-result">${ result }</pre>
+            <button class="btn btn-secondary copy-btn" onclick="copyToClipboard(this)">Copy</button>
+            `
+            element.innerHTML = html
+        }
+
+        const copyToClipboard = function (ele) {
+            const resultElement = ele.previousElementSibling
+            const textToCopy = resultElement.innerText
+            navigator.clipboard
+                .writeText(textToCopy)
+                .then(() => {
+                    notify.success('Copied to clipboard')
+                })
+                .catch(err => {
+                    console.error('Failed to copy text to clipboard', err)
+                    notify.error('Failed to copy')
+                })
+        }
+    </script>
+
+    <!-- MetaMask SDK for connecting to the MetaMask Plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuidv4.min.js"></script>
+    <script src="https://unpkg.com/@metamask/detect-provider/dist/detect-provider.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.9.1/ethers.umd.min.js"></script>
+    <script>
+        const getSignatureFromMetaMask = async function () {
+            const _ethereum = window.ethereum || await detectEthereumProvider()
+            if (!_ethereum) {
+                throw new Error('Please install MetaMask and create wallet in MetaMask!')
+            }
+            if (!_ethereum.isMetaMask) {
+                throw new Error('Please install MetaMask or set MetaMask as the default wallet!')
+            }
+
+            const [address] = await _ethereum.request({ method: 'eth_requestAccounts', params: []  })
+            const account = address.toLowerCase()
+
+            const value = {
+                id: uuidv4(),
+                account,
+                timestamp: Math.floor(+new Date() / 1000),
+            }
+            const EIP712 = {
+                domain: {
+                    name: 'GENU.N Authentication',
+                    version: '1.0',
+                    verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
+                },
+                primaryType: 'Request',
+                types: {
+                    Request: [
+                        { name: 'id', type: 'string' },
+                        { name: 'account', type: 'address' },
+                        { name: 'timestamp', type: 'uint256' },
+                    ],
+                },
+            }
+
+            const message = ethers.TypedDataEncoder.getPayload(EIP712.domain, EIP712.types, value)
+
+            const signature = await _ethereum.request({
+                method: 'eth_signTypedData_v4',
+                params: [
+                    account, JSON.stringify(message),
+                ],
+            })
+
+            return {
+                ...value,
+                signature,
+            }
+        }
+    </script>
+
+    <!-- Web3Auth SDK for connecting to the Web3 wallet -->
+    <!--
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuidv4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@7.3.1/dist/modal.umd.min.js"></script>
+    <script>
+        const getSignatureFromWeb3Auth = async function ({
+            clientId, // Your client ID from the Web3Auth project dashboard
+            chainId, // Chain ID which you want to connect
+            rpcTarget, // RPC Url for the chain
+            web3AuthNetwork, // Web3Auth network
+        }) {
+            const web3auth = new Modal.Web3Auth({
+                clientId: clientId,
+                chainConfig: {
+                    chainNamespace: 'eip155',
+                    chainId,
+                    rpcTarget,
+                },
+                web3AuthNetwork,
+            })
+            await web3auth.initModal()
+            const web3authProvider = await web3auth.connect()
+            const provider = new ethers.BrowserProvider(web3authProvider)
+            const signer = await provider.getSigner()
+            const address = await signer.getAddress()
+            const account = address.toLowerCase()
+
+            const value = {
+                id: uuidv4(),
+                account,
+                timestamp: Math.floor(Date.now() / 1000),
+            }
+            const EIP712 = {
+                domain: {
+                    name: 'GENU.N Authentication',
+                    version: '1.0',
+                    verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
+                },
+                primaryType: 'Request',
+                types: {
+                    Request: [
+                        { name: 'id', type: 'string' },
+                        { name: 'account', type: 'address' },
+                        { name: 'timestamp', type: 'uint256' },
+                    ],
+                },
+            }
+            const message = ethers.TypedDataEncoder.getPayload(EIP712.domain, EIP712.types, value)
+            const params = [account, JSON.stringify(message)]
+            const method = 'eth_signTypedData_v4'
+            const signature = await signer.provider.send(method, params)
+            // web3auth.logout()
+
+            return {
+                ...value,
+                signature,
+            }
+        }
+    </script>
+    -->
+
+
+    <!-- The essential libraries required for the operation of the GENU.N SDK -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
+    <!-- GENU.N SDK -->
+    <script src="<cdn-endpoint><latest-sdk-filename>"></script>
+    <script>
+        /**
+         * Initialize TokenGatingClient
+         * GENUN.TokenGatingClient supports the following methods:
+         * - auth: Authentication methods
+         * - product: Product methods
+         * - identityAsset: Identity Asset methods
+         * - user: User methods
+         * - gating: Gating methods
+         */
+        let genunClient = null
+    </script>
+
+    <script>
+        /**
+         * SDK Features Sample
+         * The handler object contains methods for showcasing SDK features.
+         * The handle method is used to execute the SDK feature methods.
+         */
+
+        const handler = {}
+        handler.__hasLoggedIn = null
+        handler.handleLogin = async function () {
+            if (genunClient.auth.hasLoggedIn()) {
+                return {
+                    token: genunClient.auth.getToken(),
+                }
+            }
+
+            const {
+                id,
+                account,
+                signature,
+                timestamp,
+            } = await getSignatureFromMetaMask()
+            const result = await genunClient.auth.loginWithWallet({
+                id,
+                account,
+                timestamp,
+                signature,
+                walletType: 2, // MetaMask
+            })
+
+            // const {
+            //     id,
+            //     account,
+            //     signature,
+            //     timestamp,
+            // } = await getSignatureFromWeb3Auth({
+            //     appName: 'YourAppName',
+            //     clientId: 'YourClientID',
+            //     chainId: '0x1',
+            //     rpcTarget: 'https://rpc.ankr.com/eth',
+            //     web3AuthNetwork: 'sapphire_mainnet',
+            // })
+            // const result = await genunClient.auth.loginWithWallet({
+            //     id,
+            //     account,
+            //     timestamp,
+            //     signature,
+            //     walletType: 4, // Web3Auth
+            // })
+            return result
+        }
+
+        handler.login = async function () {
+            const result = await handler.handleLogin()
+            return result
+        }
+
+        handler.listProducts = async function () {
+            const result = await genunClient.product.list({
+                limit: 10,
+                page: 1,
+            })
+            if (result?.data?.length > 0) {
+                document.getElementById('productIdForGetProductDetails').value = result.data[0].id
+            }
+            return result
+        }
+
+        handler.getProductDetails = async function () {
+            const productId = document.getElementById('productIdForGetProductDetails').value.trim()
+            if (!productId) {
+                throw new Error('Please enter a Product ID.')
+                return
+            }
+            const result = await genunClient.product.detail(productId)
+            return result
+        }
+
+        handler.authenticateProductItem = async function () {
+            const authLink = document.getElementById('authLink').value.trim()
+            if (!authLink) {
+                throw new Error('Please enter the authentication link.')
+            }
+            const parsedUrl = new URL(authLink)
+            const queryParams = new URLSearchParams(parsedUrl.search)
+            const secureCode = (queryParams.get('e') || '').trim()
+            if (!secureCode) {
+                throw new Error('Invalid authentication link, it should be a valid url obtained from Ntag or QR code.')
+            }
+            const result = await genunClient.identityAsset.authenticate(secureCode)
+            if (result?.shopMerchandiseSKUId) {
+                document.getElementById('productItemIdToClaim').value = result.shopMerchandiseSKUId
+            }
+            return result
+        }
+
+        handler.claimProductItem = async function () {
+            // Need to be logged in to list NFTs
+            // handler.handleLogin() is not utilized here to showcase the
+            // loginRequiredHook callback parameter in the TokenGatingClient constructor
+            // when the user does not click the login button
+            const productItemId = document.getElementById('productItemIdToClaim').value.trim()
+            if (!productItemId) {
+                throw new Error('Please authenticate the product item before attempting to claim it.')
+            }
+            const result = await genunClient.product.claimItem(productItemId)
+            return result
+        }
+
+        handler.listClaimedItems = async function () {
+            // Ensure the user is logged in before verifying
+            // Sample handling of the login required hook
+            await handler.handleLogin()
+            const result = await genunClient.user.items({
+                limit: 10,
+                page: 1,
+            })
+            if (result?.data?.length > 0) {
+                document.getElementById('productItemIdToGetItemDetails').value = result.data[0].shopMerchandiseSKU.id
+            }
+            return result
+        }
+
+        handler.getItemDetails = async function () {
+            const productItemId = document.getElementById('productItemIdToGetItemDetails').value.trim()
+            if (!productItemId) {
+                throw new Error('Please enter a Product Item ID.')
+            }
+            const result = await genunClient.product.itemDetail({
+                shopMerchandiseSKUId: productItemId,
+            })
+            return result
+        }
+
+        handler.listNFTs = async function () {
+            await handler.handleLogin()
+            const result = await genunClient.user.nfts({
+                limit: 10,
+                page: 1,
+            })
+            return result
+        }
+
+        handler.gatingVerify = async function () {
+            await handler.handleLogin()
+            const result = await genunClient.gating.verify()
+            return result
+        }
+
+
+        /**
+         * Handle the SDK features
+         * The handle method is used to execute the SDK feature methods.
+         * The activeActions map is used to prevent multiple identical
+         * actions from being executed simultaneously.
+         */
+        const activeActions = new Map()
+
+        const handle = async function (action, resultContainerId) {
+            if (activeActions.get(action)) {
+                console.log(`Action "${action}" is already in progress.`)
+                return
+            }
+            activeActions.set(action, true)
+
+            try {
+                if (!genunClient) {
+                    const domain = document.querySelector('#domain').value.trim()
+                    const apiKey = document.querySelector('#apiKey').value.trim()
+                    if (!domain) {
+                        throw new Error('Please enter the Domain')
+                    }
+                    if (!apiKey) {
+                        throw new Error('Please enter the API Key')
+                    }
+
+                    genunClient = new GENUNClient({
+                        domain,
+                        apiKey,
+                        debug: true,
+                        loginRequiredHook () {
+                            // Handle the logic when the API returns that user
+                            // authentication is required to access the API.
+                            notify.error('You need to be logged in to perform this action.')
+                        },
+
+                        // axiosConfig
+                        timeout: 10000,
+                    })
+                }
+                const result = await handler[action]()
+                displayResult(resultContainerId, result)
+            } catch (error) {
+                console.log('@error', error)
+                if (_.isPlainObject(error)) {
+                    displayResult(resultContainerId, error)
+                } else {
+                    notify.error(error.message)
+                }
+            } finally {
+                activeActions.delete(action)
+            }
+        }
+    </script>
+</body>
+</html>

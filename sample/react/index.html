@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <script type="module">
+            import { Buffer } from "buffer";
+            window.Buffer = Buffer;
+            window.global = globalThis;
+        </script>
+        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>GENU.N Open Platform SDK for JavaScript Sample</title>
+        <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@7.3.1/dist/modal.umd.min.js"></script>
+    </head>
+    <body>
+        <div id="root"></div>
+        <script type="module" src="/src/main.jsx"></script>
+    </body>
+</html>

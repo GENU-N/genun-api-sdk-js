@@ -1,0 +1,105 @@
+:root {
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+
+    color-scheme: light dark;
+    color: rgba(255, 255, 255, 0.87);
+    background-color: #242424;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+    font-weight: 500;
+    color: #646cff;
+    text-decoration: inherit;
+}
+a:hover {
+    color: #535bf2;
+}
+
+body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+}
+
+h1 {
+    font-size: 3.2em;
+    line-height: 1.1;
+}
+
+button {
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 0.6em 1.2em;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: #1a1a1a;
+    cursor: pointer;
+    transition: border-color 0.25s;
+}
+button:hover {
+    border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+    outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        color: #213547;
+        background-color: #ffffff;
+    }
+    a:hover {
+        color: #747bff;
+    }
+    button {
+        background-color: #f9f9f9;
+    }
+}
+
+/* Set the width and background color for the scrollbar */
+::-webkit-scrollbar {
+    width: 8px; /* Adjust the width as needed */
+    height: 8px; /* Adjust the height as needed */
+    background-color: #2A2A2A; /* Scrollbar background color */
+}
+
+/* Set the background color for the scrollbar track */
+::-webkit-scrollbar-track {
+    background-color: #2A2A2A; /* Track background color */
+}
+
+/* Set the style for the scrollbar thumb */
+::-webkit-scrollbar-thumb {
+    background-color: #6B6B6B; /* Thumb background color */
+    border-radius: 6px; /* Set rounded corners */
+}
+
+/* Set the style for the scrollbar thumb on hover */
+::-webkit-scrollbar-thumb:hover {
+    background-color: #959595;
+}
+
+/* If you want the scrollbar to be transparent, you can set the scrollbar and track background to transparent */
+::-webkit-scrollbar,
+::-webkit-scrollbar-track {
+    background-color: transparent; /* Transparent background */
+}
+
+/* If you want the thumb to be semi-transparent, you can set it like this */
+::-webkit-scrollbar-thumb {
+    background-color: rgba(107, 107, 107, 0.5); /* Semi-transparent thumb */
+}
+
+/* Modify the color of the scrollbar corners */
+::-webkit-scrollbar-corner {
+    background-color: #2A2A2A; /* Set to the same color as the scrollbar track */
+}

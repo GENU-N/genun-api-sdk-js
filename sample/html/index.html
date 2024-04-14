@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GENU-N SDK for JavaScript Sample</title>
+    <title>GENU-N Client SDK for JavaScript Sample</title>
 
     <!-- Libraries to Assist with SDK Sample Usage -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
@@ -130,7 +130,7 @@
 
 <body>
     <div class="container">
-        <h1>GENU-N SDK Features</h1>
+        <h1>GENU-N Client SDK Features</h1>
 
         <!-- Configuration Section -->
         <section id="config-section">
@@ -235,20 +235,6 @@
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/lodash/lodash.min.js"></script>
 
-    <!-- GENUN's MetaMask SDK for connecting to the MetaMask wallet
-         used here to generate EIP-712 signatures. In your actual project, it is not mandatory,
-         and you can use any library of your preference to accomplish the signature generation functionality.
-    -->
-    <script src="<cdn-endpoint>metamask-sdk-0.18.2.min.js"></script>
-    <script src="https://unpkg.com/@metamask/detect-provider/dist/detect-provider.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.9.1/ethers.umd.min.js"></script>
-    <script src="<cdn-endpoint><latest-metamask-filename>"></script>
-
-    <!-- The essential libraries required for the operation of the GENU.N SDK -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
-    <!-- GENU.N SDK -->
-    <script src="<cdn-endpoint><latest-sdk-filename>"></script>
-
     <script>
         /**
          * Helper methods for displaying the SDK features:
@@ -302,31 +288,58 @@
         }
     </script>
 
+    <!-- MetaMask SDK for connecting to the MetaMask Plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuidv4.min.js"></script>
+    <script src="https://unpkg.com/@metamask/detect-provider/dist/detect-provider.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.9.1/ethers.umd.min.js"></script>
     <script>
-        /**
-         * SDK configuration and initialization
-         * `GENUN` is available from the token-gating-client-sdk.umd.latest.min.js script
-         */
+        const getSignatureFromMetaMask = async function () {
+            const _ethereum = window.ethereum || await detectEthereumProvider()
+            if (!_ethereum) {
+                throw new Error('Please install MetaMask and create wallet in MetaMask!')
+            }
+            if (!_ethereum.isMetaMask) {
+                throw new Error('Please install MetaMask or set MetaMask as the default wallet!')
+            }
 
-        /**
-         * Initialize MetaMask
-         * GENUN.MetaMask supports the following methods:
-         * - initMetaMask: Initialize MetaMask
-         * - getSignature: Get the signature from MetaMask
-         * - getAccount: Get the account from MetaMask
-         */
-        const metamask = new GENUNMetaMask()
+            const [address] = await _ethereum.request({ method: 'eth_requestAccounts', params: []  })
+            const account = address.toLowerCase()
 
-        /**
-         * Initialize TokenGatingClient
-         * GENUN.TokenGatingClient supports the following methods:
-         * - auth: Authentication methods
-         * - product: Product methods
-         * - identityAsset: Identity Asset methods
-         * - user: User methods
-         * - gating: Gating methods
-         */
-        let genunClient = null
+            const value = {
+                id: uuidv4(),
+                account,
+                timestamp: Math.floor(+new Date() / 1000),
+            }
+            const EIP712 = {
+                domain: {
+                    name: 'GENU.N Authentication',
+                    version: '1.0',
+                    verifyingContract: '0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC',
+                },
+                primaryType: 'Request',
+                types: {
+                    Request: [
+                        { name: 'id', type: 'string' },
+                        { name: 'account', type: 'address' },
+                        { name: 'timestamp', type: 'uint256' },
+                    ],
+                },
+            }
+
+            const message = ethers.TypedDataEncoder.getPayload(EIP712.domain, EIP712.types, value)
+
+            const signature = await _ethereum.request({
+                method: 'eth_signTypedData_v4',
+                params: [
+                    account, JSON.stringify(message),
+                ],
+            })
+
+            return {
+                ...value,
+                signature,
+            }
+        }
     </script>
 
     <!-- Web3Auth SDK for connecting to the Web3 wallet -->
@@ -335,7 +348,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@7.3.1/dist/modal.umd.min.js"></script>
     <script>
         const getSignatureFromWeb3Auth = async function ({
-            appName, // Your application name
             clientId, // Your client ID from the Web3Auth project dashboard
             chainId, // Chain ID which you want to connect
             rpcTarget, // RPC Url for the chain
@@ -357,7 +369,7 @@
             const address = await signer.getAddress()
             const account = address.toLowerCase()
 
-            const dataToBeSigned = {
+            const value = {
                 id: uuidv4(),
                 account,
                 timestamp: Math.floor(Date.now() / 1000),
@@ -377,43 +389,37 @@
                     ],
                 },
             }
-            const message = ethers.TypedDataEncoder.getPayload(EIP712.domain, EIP712.types, dataToBeSigned)
+            const message = ethers.TypedDataEncoder.getPayload(EIP712.domain, EIP712.types, value)
             const params = [account, JSON.stringify(message)]
             const method = 'eth_signTypedData_v4'
             const signature = await signer.provider.send(method, params)
             // web3auth.logout()
 
             return {
-                ...dataToBeSigned,
+                ...value,
                 signature,
             }
         }
-
-        // Example usage
-        const loginViaWeb3Auth = async function () {
-            const {
-                id,
-                account,
-                signature,
-                timestamp,
-            } = await getSignatureFromWeb3Auth({
-                appName: 'YourAppName',
-                clientId: 'YourClientID',
-                chainId: '0x1',
-                rpcTarget: 'https://rpc.ankr.com/eth',
-                web3AuthNetwork: 'sapphire_mainnet',
-            })
-            const result = await genunClient.auth.loginWithWallet({
-                id,
-                account,
-                timestamp,
-                signature,
-                walletType: 4,
-            })
-            return result
-        }
     </script>
     -->
+
+
+    <!-- The essential libraries required for the operation of the GENU.N SDK -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.2/axios.min.js"></script>
+    <!-- GENU.N SDK -->
+    <script src="https://cdn.genunuserdata.online/genun-client-sdk.umd.1.4.0.min.js"></script>
+    <script>
+        /**
+         * Initialize TokenGatingClient
+         * GENUN.TokenGatingClient supports the following methods:
+         * - auth: Authentication methods
+         * - product: Product methods
+         * - identityAsset: Identity Asset methods
+         * - user: User methods
+         * - gating: Gating methods
+         */
+        let genunClient = null
+    </script>
 
     <script>
         /**
@@ -431,13 +437,12 @@
                 }
             }
 
-            await metamask.initMetaMask()
             const {
                 id,
                 account,
                 signature,
                 timestamp,
-            } = await metamask.getSignature()
+            } = await getSignatureFromMetaMask()
             const result = await genunClient.auth.loginWithWallet({
                 id,
                 account,
@@ -445,6 +450,26 @@
                 signature,
                 walletType: 2, // MetaMask
             })
+
+            // const {
+            //     id,
+            //     account,
+            //     signature,
+            //     timestamp,
+            // } = await getSignatureFromWeb3Auth({
+            //     appName: 'YourAppName',
+            //     clientId: 'YourClientID',
+            //     chainId: '0x1',
+            //     rpcTarget: 'https://rpc.ankr.com/eth',
+            //     web3AuthNetwork: 'sapphire_mainnet',
+            // })
+            // const result = await genunClient.auth.loginWithWallet({
+            //     id,
+            //     account,
+            //     timestamp,
+            //     signature,
+            //     walletType: 4, // Web3Auth
+            // })
             return result
         }
 

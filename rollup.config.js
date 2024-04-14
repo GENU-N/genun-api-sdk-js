@@ -89,29 +89,36 @@ const basePlugins = [
 ]
 
 module.exports = [
-    // MetaMask UMD configuration
+    // SDK ESM configuration
     {
-        input: 'src/metamask/index.js',
+        input: 'src/sdk/index.js',
         external: [
-            '@metamask/detect-provider',
-            '@metamask/sdk',
-            'ethers',
+            'axios',
         ],
         output: {
-            name: 'GENUNMetaMask',
-            file: 'dist/genun.metamask.umd.min.js',
-            format: 'umd',
+            file: 'dist/genun-client-sdk.esm.js',
+            format: 'esm',
             sourcemap: process.env.NODE_ENV === 'development',
-            globals: {
-                '@metamask/detect-provider': 'detectEthereumProvider',
-                '@metamask/sdk': 'MetaMaskSDK',
-                'ethers': 'ethers',
-            },
         },
         plugins: [
             ...basePlugins,
-            terser(),
-            addVersionToFilename(pkg.version),
+            terser(), // Minify the output
+        ],
+    },
+    // SDK CJS configuration
+    {
+        input: 'src/sdk/index.js',
+        external: [
+            'axios',
+        ],
+        output: {
+            file: 'dist/genun-client-sdk.cjs.js',
+            format: 'cjs',
+            sourcemap: process.env.NODE_ENV === 'development',
+        },
+        plugins: [
+            ...basePlugins,
+            terser(), // Minify the output
         ],
     },
     // SDK UMD configuration
@@ -122,7 +129,7 @@ module.exports = [
         ],
         output: {
             name: 'GENUNClient',
-            file: 'dist/genun.sdk.umd.min.js',
+            file: 'dist/genun-client-sdk.umd.min.js',
             format: 'umd',
             sourcemap: process.env.NODE_ENV === 'development',
             globals: {

@@ -13,8 +13,8 @@ Ensure that `yarn` is installed on your system. Yarn is used for managing the pr
 To set up the project, start by cloning the repository and installing its dependencies:
 
 ```sh
-git clone git@github.com:GENU-N/genun-api-sdk-js.git
-cd genun-api-sdk-js
+git clone git@github.com:GENU-N/genun-client-sdk-js.git
+cd genun-client-sdk-js
 yarn install
 ```
 

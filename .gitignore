@@ -8,7 +8,6 @@ typings.json
 typings/
 .vscode/
 dist/
-public/
 deploy.sh
 deploy.*.sh
 .mocharc-app-config.js

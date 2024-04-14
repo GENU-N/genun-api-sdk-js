@@ -1,19 +1,40 @@
 {
-  "name": "genun-client-sdk",
+  "name": "@genun/client-sdk",
   "version": "1.4.0",
-  "description": "",
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "files": [
-    "dist"
+  "license": "Apache-2.0",
+  "description": "GENU-N Open Platform Client SDK for JavaScript",
+  "keywords": [
+    "api",
+    "sdk",
+    "genun",
+    "token-gating",
+    "nft",
+    "web3",
+    "blockchain",
+    "ethereum"
   ],
+  "author": {
+    "name": "GENU-N Open Platform",
+    "email": "contact@genun.tech",
+    "url": "https://genun.tech/"
+  },
+  "homepage": "https://open.genun.tech/docs/",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:GENU-N/genun-client-sdk-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/GENU-N/genun-client-sdk-js/issues",
+    "mail": ""
+  },
   "scripts": {
     "test": "mocha",
     "clean": "shx rm -rf dist",
-    "build:sample": "shx cp -r src/sample/* dist && node scripts/build-sample.js",
+    "build:html-sample": "node scripts/build-html-sample.js",
+    "build:react-sample": "node scripts/build-react-sample.js",
+    "build:npm": "node scripts/build-npm-package.js",
     "build:dev": "NODE_ENV=development npm run build",
-    "build": "npm run clean && rollup -c && npm run build:sample"
+    "build": "npm run clean && rollup -c && npm run build:html-sample && npm run build:react-sample && npm run build:npm"
   },
   "cdnEndpoint": "https://cdn.genunuserdata.online/",
   "devDependencies": {
@@ -32,6 +53,7 @@
     "axios": "1.6.8",
     "chai": "4.4.1",
     "core-js": "3.36.1",
+    "dotenv": "16.4.5",
     "eslint": "8.57.0",
     "eslint-config-airbnb-base": "15.0.0",
     "eslint-plugin-chai-friendly": "0.7.4",
@@ -39,8 +61,10 @@
     "eslint-plugin-import": "2.29.1",
     "eslint-plugin-security": "1.7.1",
     "ethers": "6.11.1",
+    "fs-extra": "11.2.0",
     "github-markdown-css": "5.5.1",
     "glob": "10.3.12",
+    "ignore": "^5.3.1",
     "mailslurp-client": "15.19.0",
     "markdown-it": "14.1.0",
     "mocha": "10.4.0",
@@ -54,18 +78,15 @@
     "rollup-plugin-polyfill-node": "0.13.0",
     "rollup-plugin-serve": "1.1.1",
     "rollup-plugin-terser": "7.0.2",
-    "shx": "0.3.4"
+    "shx": "0.3.4",
+    "sleep-promise": "9.1.0",
+    "uuid": "9.0.1"
   },
   "peerDependencies": {
-    "@metamask/detect-provider": "2.0.0",
-    "@metamask/sdk": "0.18.1",
-    "axios": "1.6.8",
-    "ethers": "6.11.1"
+    "axios": "1.6.8"
   },
   "dependencies": {
     "lodash": "4.17.21",
-    "sleep-promise": "9.1.0",
-    "ua-parser-js": "1.0.37",
-    "uuid": "9.0.1"
+    "ua-parser-js": "1.0.37"
   }
 }

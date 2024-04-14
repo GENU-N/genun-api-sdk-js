@@ -1,0 +1,7 @@
+.eslintrc.js
+.eslintrc.cjs
+.env*
+env*
+dist/
+*.cjs
+*.sh
