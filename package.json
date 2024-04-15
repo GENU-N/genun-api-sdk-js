@@ -34,7 +34,8 @@
     "build:react-sample": "node scripts/build-react-sample.js",
     "build:npm": "node scripts/build-npm-package.js",
     "build:dev": "NODE_ENV=development npm run build",
-    "build": "npm run clean && rollup -c && npm run build:html-sample && npm run build:react-sample && npm run build:npm"
+    "build": "npm run clean && rollup -c && npm run build:html-sample && npm run build:react-sample && npm run build:npm",
+    "publish": "npm run build && node scripts/publish-npm-package.js"
   },
   "cdnEndpoint": "https://cdn.genunuserdata.online/",
   "devDependencies": {
@@ -83,7 +84,7 @@
     "uuid": "9.0.1"
   },
   "peerDependencies": {
-    "axios": "1.6.8"
+    "axios": "1.6.2"
   },
   "dependencies": {
     "lodash": "4.17.21",
