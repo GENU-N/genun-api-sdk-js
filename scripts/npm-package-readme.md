@@ -9,7 +9,7 @@ The SDK is a client-side library written in Javascript, you can easily integrate
 
 For detailed documentation and API references, visit the `@genun/client-sdk` documentation site: [GENU-N Open Platform Documentation](https://open.genun.tech/docs/).
 
-## Installation
+## Install with NPM
 
 The `@genun/client-sdk` depends on `axios` for making HTTP requests. Make sure to install `axios` if you haven't already.
 
