@@ -17,7 +17,7 @@ class ProductAPI extends Base {
      * @api {post} /api/v1/identity-assets/authenticate Authenticate Identity Asset (Ntag or QR Code Authentication)
      * @apiName AuthenticateIdentityAsset
      * @apiParam {String} secureCode - required, the "e" parameter within the query of the authentication URL from Ntag chip or QR Code
-     * @returns {Object} { tagHasNotBeenTampered, shopMerchandiseSKUId }
+     * @returns {Object} { tagHasNotBeenTampered, productItemId }
      */
     async authenticate (secureCode) {
         return this.request({

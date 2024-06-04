@@ -2,6 +2,7 @@
 const path = require('path')
 const { ethers } = require('ethers')
 const uuidv4 = require('uuid').v4
+const { LocalStorage } = require('node-localstorage')
 
 const configPath = path.resolve(__dirname, './.mocharc-app-config.js')
 
@@ -39,6 +40,7 @@ const MetaMask = class {
 
 
 try {
+    global.localStorage = new LocalStorage('./.cache/local-storage')
     const AppConfig = require(configPath)
     global.AppConfig = AppConfig
     global.metamask = new MetaMask({

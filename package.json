@@ -69,6 +69,7 @@
     "mailslurp-client": "15.19.0",
     "markdown-it": "14.1.0",
     "mocha": "10.4.0",
+    "node-localstorage": "3.0.5",
     "nyc": "15.1.0",
     "regenerator-runtime": "0.14.1",
     "rollup": "4.13.2",

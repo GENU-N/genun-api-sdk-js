@@ -59,15 +59,15 @@ describe('Product Tests', function () {
     })
 
     it('should get product detail successfully', async () => {
-        const response = await sdk.product.detail('684205362919768064')
+        const response = await sdk.product.detail('715996676510187520')
         // console.log('@response', JSON.stringify(response))
         expect(response).to.have.property('id')
-        // assert.isNotNull(response.shopMerchandiseSKU.id, 'shopMerchandiseSKU.id should not be null')
+        // assert.isNotNull(response.productItem.id, 'productItem.id should not be null')
     })
 
     it('should list product items successfully', async () => {
         const response = await sdk.product.items({
-            shopMerchandiseId: '684205362919768064',
+            productId: '715996676510187520',
             limit: 10,
             page: 1,
         })
@@ -80,7 +80,7 @@ describe('Product Tests', function () {
         const page = 2
         const limit = 2
         const response = await sdk.product.items({
-            shopMerchandiseId: '684205362919768064',
+            productId: '715996676510187520',
             limit,
             page,
         })
@@ -93,24 +93,25 @@ describe('Product Tests', function () {
 
     it('should get product item detail successfully', async () => {
         const response = await sdk.product.itemDetail({
-            shopMerchandiseSKUId: '662806582458843136',
+            productItemId: '715996898548252672',
         })
         // console.log('response', JSON.stringify(response))
-        expect(response).to.have.property('shopMerchandiseSKU')
-        assert.isNotNull(response.shopMerchandiseSKU.id, 'shopMerchandiseSKU.id should not be null')
+        expect(response).to.have.property('productItem')
+        assert.isNotNull(response.productItem.id, 'productItem.id should not be null')
     })
 
     it('should get product item detail by logged-in user successfully', async () => {
         await global.login()
         const response = await sdk.product.itemDetail({
-            shopMerchandiseSKUId: '662806582458843136',
+            productItemId: '715996898548252672',
         })
         // console.log('response', JSON.stringify(response))
-        expect(response).to.have.property('shopMerchandiseSKU')
-        assert.isNotNull(response.shopMerchandiseSKU.id, 'shopMerchandiseSKU.id should not be null')
+        expect(response).to.have.property('productItem')
+        assert.isNotNull(response.productItem.id, 'productItem.id should not be null')
         await sdk.auth.logout()
     })
 
+    // // Individually test the authentication URL of the product (item)
     // // Manual configuration of `claimableItem.qrcodeUrl` required in `.mocharc-app-config.js`
     // it('should authenticate item url successfully', async () => {
     //     if (!AppConfig?.claimableItem?.qrcodeUrl) {
@@ -127,30 +128,68 @@ describe('Product Tests', function () {
 
     //     const response = await sdk.identityAsset.authenticate(secureCode)
     //     // console.log('response', JSON.stringify(response))
-    //     expect(response).to.have.property('shopMerchandiseSKUId')
+    //     expect(response).to.have.property('productItemId')
     // })
 
-    it('should claim item successfully', async function () {
-        if (!AppConfig?.claimableItem?.qrcodeUrl) {
-            this.skip()
+    // Test the authentication URL of the product (item) + claim product(item)
+    it('should claim One-Time Claim product item successfully', async function () {
+        try {
+            if (!AppConfig?.claimableItem?.qrcodeUrl) {
+                this.skip()
+            }
+            const parsedUrl = new URL(AppConfig.claimableItem.qrcodeUrl)
+            const queryParams = new URLSearchParams(parsedUrl.search)
+            const secureCode = (queryParams.get('e') || '').trim()
+            if (!secureCode) {
+                this.skip()
+            }
+
+            await global.login()
+
+            const response = await sdk.identityAsset.authenticate(secureCode)
+            // console.log('response', JSON.stringify(response))
+            expect(response).to.have.property('productItemId')
+
+            const claimResponse = await sdk.product.claimItem({ productItemId: response.productItemId })
+            // console.log('claimResponse', JSON.stringify(claimResponse))
+            expect(claimResponse).to.have.property('productItem')
+            assert.isNotNull(claimResponse.productItem.id, 'productItem.id should not be null')
+            await sdk.auth.logout()
+        } catch (error) {
+            console.log('error', error)
+            throw error
         }
-        const parsedUrl = new URL(AppConfig.claimableItem.qrcodeUrl)
-        const queryParams = new URLSearchParams(parsedUrl.search)
-        const secureCode = (queryParams.get('e') || '').trim()
-        if (!secureCode) {
-            this.skip()
-        }
-
-        await global.login()
-
-        const response = await sdk.identityAsset.authenticate(secureCode)
-        // console.log('response', JSON.stringify(response))
-        expect(response).to.have.property('shopMerchandiseSKUId')
-
-        const claimResponse = await sdk.product.claimItem(response.shopMerchandiseSKUId)
-        // console.log('claimResponse', JSON.stringify(claimResponse))
-        expect(claimResponse).to.have.property('shopMerchandiseSKU')
-        assert.isNotNull(claimResponse.shopMerchandiseSKU.id, 'shopMerchandiseSKU.id should not be null')
-        await sdk.auth.logout()
     })
+
+    // // Test the authentication URL of the product (item) + claim product(item)
+    // it('should claim Multi-Time Claim product item successfully', async function () {
+    //     try {
+    //         if (!AppConfig?.claimableProduct?.qrcodeUrl) {
+    //             this.skip()
+    //         }
+    //         const parsedUrl = new URL(AppConfig.claimableProduct.qrcodeUrl)
+    //         const queryParams = new URLSearchParams(parsedUrl.search)
+    //         const secureCode = (queryParams.get('e') || '').trim()
+    //         if (!secureCode) {
+    //             this.skip()
+    //         }
+
+    //         await global.login()
+
+    //         const response = await sdk.identityAsset.authenticate(secureCode)
+    //         console.log('response', JSON.stringify(response))
+    //         expect(response).to.have.property('productId')
+
+    //         const claimResponse = await sdk.product.claimProduct({
+    //             productId: response.productId,
+    //         })
+    //         console.log('claimResponse', JSON.stringify(claimResponse))
+    //         expect(claimResponse).to.have.property('product')
+    //         assert.isNotNull(claimResponse.product.id, 'product.id should not be null')
+    //         await sdk.auth.logout()
+    //     } catch (error) {
+    //         console.log('error', error)
+    //         throw error
+    //     }
+    // })
 })

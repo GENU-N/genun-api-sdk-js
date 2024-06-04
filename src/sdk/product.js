@@ -46,31 +46,31 @@ class ProductAPI extends Base {
     }
 
     /**
-     * @api {get} /api/v1/products/:shopMerchandiseId Get a product
+     * @api {get} /api/v1/products/:productId Get a product
      * @apiName GetProduct
      * @apiDescription Get a product
-     * @apiParam {String} shopMerchandiseId - required, shopMerchandise id
+     * @apiParam {String} productId - required, product id
      * @returns {Object[]} Product - An array of products
      */
-    async detail (shopMerchandiseId) {
+    async detail (productId) {
         return this.request({
-            url: `/${ shopMerchandiseId }`,
+            url: `/${ productId }`,
             method: 'get',
             timeout: 1000 * 60 * 30,
         })
     }
 
     /**
-     * @api {get} /api/v1/products/:shopMerchandiseId/items List Product Items
+     * @api {get} /api/v1/products/:productId/items List Product Items
      * @apiName ListProductItems
      * @apiDescription List product items
-     * @apiParam {String} shopMerchandiseId - required, shopMerchandise id
+     * @apiParam {String} productId - required, product id
      * @apiParam {Number} [limit=10] - The size of each page
      * @apiParam {Number} [page=1] - The number of the page
      * @returns {Object[]} ProductItems - An array of product items
      */
     async items ({
-        shopMerchandiseId,
+        productId,
         limit = 10,
         page = 1,
         ...params
@@ -79,7 +79,7 @@ class ProductAPI extends Base {
         const skip = (page - 1) * limit
 
         const res = await this.request({
-            url: `/${ shopMerchandiseId }/items`,
+            url: `/${ productId }/items`,
             method: 'get',
             params: {
                 ...params,
@@ -95,18 +95,18 @@ class ProductAPI extends Base {
     }
 
     /**
-     * @api {get} /api/v1/products/items/:shopMerchandiseSKUId Get a product item
+     * @api {get} /api/v1/products/items/:productItemId Get a product item
      * @apiName GetProductItem
      * @apiDescription Get a product item
-     * @apiParam {String} shopMerchandiseSKUId - required, shopMerchandiseSKU id
+     * @apiParam {String} productItemId - required, productItem id
      * @returns {Object} ProductItem
      */
     async itemDetail ({
-        shopMerchandiseSKUId,
+        productItemId,
         // userId,
     } = {}) {
         return this.request({
-            url: `/items/${ shopMerchandiseSKUId }`,
+            url: `/items/${ productItemId }`,
             method: 'get',
             params: {
                 // u: userId,
@@ -116,18 +116,43 @@ class ProductAPI extends Base {
     }
 
     /**
-     * @api {post} /api/v1/products/:shopMerchandiseSKUId/claim Claim a product item
+     * @api {post} /api/v1/products/:productItemId/claim Claim a product item
      * @apiName ClaimProductItem
      * @apiDescription Claim a product item
-     * @apiParam {String} shopMerchandiseSKUId - required, shopMerchandiseSKU id
+     * @apiParam {String} productItemId - required, productItem id
+     * @apiParam {String} rewardCode - optional, reward code
      * @returns {Object} ProductItem
      */
-    async claimItem (shopMerchandiseSKUId) {
+    async claimItem ({
+        productItemId,
+        rewardCode,
+    } = {}) {
         return this.request({
-            url: `/${ shopMerchandiseSKUId }/claim`,
+            url: `/items/${ productItemId }/claim`,
             method: 'post',
             data: {
-                shopMerchandiseSKUId,
+                rewardCode,
+            },
+        })
+    }
+
+    /**
+     * @api {post} /api/v1/products/:productId/claim Claim a product
+     * @apiName ClaimProduct
+     * @apiDescription Claim a Multi-Claim product
+     * @apiParam {String} productId - required, product id
+     * @apiParam {String} rewardCode - optional, reward code
+     * @returns {Object} Product
+     */
+    async claimProduct ({
+        productId,
+        rewardCode,
+    } = {}) {
+        return this.request({
+            url: `/${ productId }/claim`,
+            method: 'post',
+            data: {
+                rewardCode,
             },
         })
     }

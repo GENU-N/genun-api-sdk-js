@@ -511,8 +511,8 @@
                 throw new Error('Invalid authentication link, it should be a valid url obtained from Ntag or QR code.')
             }
             const result = await genunClient.identityAsset.authenticate(secureCode)
-            if (result?.shopMerchandiseSKUId) {
-                document.getElementById('productItemIdToClaim').value = result.shopMerchandiseSKUId
+            if (result?.productItemId) {
+                document.getElementById('productItemIdToClaim').value = result.productItemId
             }
             return result
         }
@@ -526,7 +526,9 @@
             if (!productItemId) {
                 throw new Error('Please authenticate the product item before attempting to claim it.')
             }
-            const result = await genunClient.product.claimItem(productItemId)
+            const result = await genunClient.product.claimItem({
+                productItemId,
+            })
             return result
         }
 
@@ -539,7 +541,7 @@
                 page: 1,
             })
             if (result?.data?.length > 0) {
-                document.getElementById('productItemIdToGetItemDetails').value = result.data[0].shopMerchandiseSKU.id
+                document.getElementById('productItemIdToGetItemDetails').value = result.data[0].productItem.id
             }
             return result
         }
@@ -550,7 +552,7 @@
                 throw new Error('Please enter a Product Item ID.')
             }
             const result = await genunClient.product.itemDetail({
-                shopMerchandiseSKUId: productItemId,
+                productItemId: productItemId,
             })
             return result
         }
